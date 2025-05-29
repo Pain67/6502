@@ -1,0 +1,118 @@
+<article id="post-410" class="post-410 post type-post status-publish format-standard hentry category-2 category-archeology category-hacks category-trivia" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h1 class="entry-title" itemprop="headline">Internals of BRK/IRQ/NMI/RESET on a MOS 6502</h1>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2010-09-29T14:47:12+02:00" itemprop="datePublished">2010-09-29</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.pagetable.com/?author=1" title="View all posts by Michael Steil" rel="author" itemprop="url"><span class="author-name" itemprop="name">Michael Steil</span></a></span></span> 		</div>
+					</header>
+
+		<div class="entry-content" itemprop="text">
+			<p>After 35 years of measuring the behaviour of the MOS 6502 CPU to better understand what is going on, the <a href="http://visual6502.org/JSSim/index.html">Visual6502</a> simulator finally allows us insight into the chip, so we can understand what the CPU does internally. One interesting thing here is the question how the 6502 handles BRK, IRQ, NMI and RESET.</p>
+<h2>The Specification</h2>
+<p>Let&#8217;s revisit the documented part first. The 6502 knows three vectors at the top of its address space:</p>
+<table border="1">
+<tr>
+<th>Signal</th>
+<th>Vector</th>
+</tr>
+<tr>
+<td>NMI</td>
+<td>$FFFA/$FFFB</td>
+</tr>
+<tr>
+<td>RESET</td>
+<td>$FFFC/$FFFD</td>
+</tr>
+<tr>
+<td>IRQ/BRK</td>
+<td>$FFFE/$FFFF</td>
+</tr>
+</table>
+<ul>
+<li>On a RESET, the CPU loads the vector from $FFFC/$FFFD into the program counter and continues fetching instructions from there.</li>
+<li>On an NMI, the CPU pushes the low byte and the high byte of the program counter as well as the processor status onto the stack, disables interrupts and loads the vector from $FFFA/$FFFB into the program counter and continues fetching instructions from there. </li>
+<li>On an IRQ, the CPU does the same as in the NMI case, but uses the vector at $FFFE/$FFFF.</li>
+<li>On a BRK instruction, the CPU does the same as in the IRQ case, but sets bit #4 (B flag) in the copy of the status register that is saved on the stack.</li>
+</ul>
+<p>The four operations are very similar, they only differ in the location of the vector, whether they actually push data onto the stack, and whether they set the B flag.</p>
+<table border="1">
+<tr>
+<th>Signal</th>
+<th>Vector</th>
+<th>Push PC and P</th>
+<th>Set B Flag</th>
+</tr>
+<tr>
+<td>NMI</td>
+<td>$FFFA/$FFFB</td>
+<td align="center">yes</td>
+<td align="center">no</td>
+</tr>
+<tr>
+<td>RESET</td>
+<td>$FFFC/$FFFD</td>
+<td align="center">no</td>
+<td align="center">no</td>
+</tr>
+<tr>
+<td>IRQ</td>
+<td>$FFFE/$FFFF</td>
+<td align="center">yes</td>
+<td align="center">no</td>
+</tr>
+<td>BRK</td>
+<td>$FFFE/$FFFF</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+</tr>
+</table>
+<h2>BRK</h2>
+<p>Ignoring opcode fetches, the <a href="http://www.pagetable.com/?p=39">PLA ROM</a> defines the following cycles of the BRK instruction (<a href="http://archive.6502.org/datasheets/synertek_programming_manual.pdf">6502 Programming Manual</a>, page 131):</p>
+<ul>
+<li>store PC(hi)</li>
+<li>store PC(lo)</li>
+<li>store P</li>
+<li>fetch PC(lo) from $FFFE</li>
+<li>fetch PC(hi) from $FFFF</li>
+</ul>
+<h2>IRQ</h2>
+<p>An IRQ does basically the same thing as a BRK, but it clears the B flag in the pushed status byte. The CPU goes through the same sequence of cycles as in the BRK case, which is done like this:</p>
+<p>If there is an IRQ pending and the current instruction has just finished, the interrupt logic in the 6502 forces the instruction register (&#8220;IR&#8221;) to &#8220;0&#8221;, so instead of executing the next instruction, the PLA will decode the instruction with the opcode 0x00 &#8211; which is BRK! Of course it has to kick in a few cycles later again to make sure a B value of 0 is pushed, but otherwise, it&#8217;s just the BRK instruction executing.</p>
+<h2>NMI</h2>
+<p>Not surprisingly, NMI is done the same way: &#8220;0&#8221; is injected into the instruction stream, but this time, some extra logic makes sure that the addresses $FFFA/$FFFB are put onto the address bus when fetching the vector.</p>
+<h2>RESET</h2>
+<p>RESET also runs through the same sequence, but it is the most different of the four cases, since it does not write the current PC and status onto the stack &#8211; but this was hacked trivially: The bus cycles exist, but the read/write line is not set to &#8220;write&#8221;, but &#8220;read&#8221; instead. The following trace was created with the transistor data from the Visual 6502 project and shows the first nine cycles after letting go of RESET:</p>
+<pre>
+#0 AB:00FF D:00 R/W:1 PC:00FF A:AA X:00 Y:00 SP:00 P:02 IR:00  READ $00FF = $00
+</pre>
+<p><b>Cycle 0</b>: When a 6502 is turned on, the stack pointer is initialized with zero. The BRK/IRQ/NMI/RESET sequence pulls the instruction register (IR) to 0.</p>
+<pre>
+#1 AB:00FF D:00 R/W:1 PC:00FF A:AA X:00 Y:00 SP:00 P:02 IR:00  READ $00FF = $00
+#2 AB:00FF D:00 R/W:1 PC:00FF A:AA X:00 Y:00 SP:00 P:02 IR:00  READ $00FF = $00
+#3 AB:0100 D:00 R/W:1 PC:00FF A:AA X:00 Y:00 SP:00 P:02 IR:00  READ $0100 = $00
+</pre>
+<p><b>Cycle 3</b>: The first stack access happens at address $0100 &#8211; a push first stores the value at $0100 + SP, then decrements SP. In the BRK/IRQ/NMI case, this would have stored the high-byte of the PC. But for RESET, it is a read cycle, not a write cycle, and the result is discarded.</p>
+<pre>
+#4 AB:01FF D:00 R/W:1 PC:00FF A:AA X:00 Y:00 SP:00 P:02 IR:00  READ $01FF = $00
+</pre>
+<p><b>Cycle 4</b>: SP is now 0xFF (even if the internal state does not reflect that), so the second stack access (which would have been the low-byte of PC) targets 0x01FF. Again, the result is discarded, and SP decremented.</p>
+<pre>
+#5 AB:01FE D:00 R/W:1 PC:00FF A:AA X:00 Y:00 SP:00 P:02 IR:00  READ $01FE = $00
+</pre>
+<p><b>Cycle 5</b>: SP is now 0xFE, and the third stack access, (the status register) happens at 0x01FE. SP is decremented again.</p>
+<pre>
+#6 AB:FFFC D:E2 R/W:1 PC:00FF A:AA X:00 Y:00 SP:FD P:06 IR:00  READ $FFFC = $E2
+</pre>
+<p><b>Cycle 6</b>: The internal state of the CPU now shows that SP is 0xFD, because it got decremented 3 times for the three fake push operations. The low-byte of the vector is read.</p>
+<pre>
+#7 AB:FFFD D:FC R/W:1 PC:00FF A:AA X:00 Y:00 SP:FD P:16 IR:00  READ $FFFD = $FC
+</pre>
+<p><b>Cycle 7</b>: The high-byte of the vector is read.</p>
+<pre>
+#8 AB:FCE2 D:A2 R/W:1 PC:FCE2 A:AA X:00 Y:00 SP:FD P:16 IR:00  READ $FCE2 = $A2
+</pre>
+<p><b>Cycle 8</b>: The first actual instruction is fetched.</p>
+<p>Since RESET is not timing critical, it doesn&#8217;t matter whether a few cycles are wasted by doing the fake stack cycles.</p>
+		</div>
+
+			</div>
+</article>
