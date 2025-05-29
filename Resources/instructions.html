@@ -1,0 +1,423 @@
+<hr>
+<h2><strong>The Instruction Set</strong></h2>
+
+<p>The 6502 has a relatively basic set of instructions, many having
+similar functions (e.g. memory access, arithmetic, etc.). The
+following sections list the complete set of 56 instructions in
+functional groups.</p>
+
+<h3>Load/Store Operations</h3>
+
+<p>These instructions transfer a single byte between memory and
+one of the registers. Load operations set the negative (<a href="registers.html#N">N</a>)
+and zero (<a href="registers.html#Z">Z</a>) flags depending on
+the value of transferred. Store operations do not affect the flag
+settings.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#LDA">LDA</a></td>
+    <td>Load Accumulator</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#LDX">LDX</a></td>
+    <td>Load X Register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#LDY">LDY</a></td>
+    <td>Load Y Register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#STA">STA</a></td>
+    <td>Store Accumulator</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#STX">STX</a></td>
+    <td>Store X Register</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#STY">STY</a></td>
+    <td>Store Y Register</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+</table></p>
+
+<h3>Register Transfers</h3>
+
+<p>The contents of the X and Y registers can be moved to or from
+the accumulator, setting the negative (<a href="registers.html#N">N</a>)
+and zero (<a href="registers.html#Z">Z</a>) flags as appropriate.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#TAX">TAX</a></td>
+    <td>Transfer accumulator to X</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#TAY">TAY</a></td>
+    <td>Transfer accumulator to Y</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#TXA">TXA</a></td>
+    <td>Transfer X to accumulator</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#TYA">TYA</a></td>
+    <td>Transfer Y to accumulator</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+</table></p>
+
+<h3>Stack Operations</h3>
+
+<p>The 6502 microprocessor supports a 256 byte stack fixed between
+memory locations $0100 and $01FF. A special 8-bit register, S,
+is used to keep track of the next free byte of stack space. Pushing
+a byte on to the stack causes the value to be stored at the current
+free location (e.g. $0100,S) and then the stack pointer is post
+decremented. Pull operations reverse this procedure.</p>
+
+<p>The stack register can only be accessed by transferring its
+value to or from the X register. Its value is automatically modified
+by push/pull instructions, subroutine calls and returns, interrupts
+and returns from interrupts.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#TSX">TSX</a></td>
+    <td>Transfer stack pointer to X</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#TXS">TXS</a></td>
+    <td>Transfer X to stack pointer</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#PHA">PHA</a></td>
+    <td>Push accumulator on stack</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#PHP">PHP</a></td>
+    <td>Push processor status on stack</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#PLA">PLA</a></td>
+    <td>Pull accumulator from stack</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#PLP">PLP</a></td>
+    <td>Pull processor status from stack</td>
+    <td align="MIDDLE" width="15%">All</td>
+  </tr>
+</table></p>
+
+<h3>Logical</h3>
+
+<p>The following instructions perform logical operations on the
+contents of the accumulator and another value held in memory.
+The BIT instruction performs a logical AND to test the presence
+of bits in the memory value to set the flags but does not keep
+the result.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#AND">AND</a></td>
+    <td>Logical AND</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#EOR">EOR</a></td>
+    <td>Exclusive OR</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#ORA">ORA</a></td>
+    <td>Logical Inclusive OR</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BIT">BIT</a></td>
+    <td>Bit Test</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#V">V</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+</table></p>
+
+<h3>Arithmetic</h3>
+
+<p>The arithmetic operations perform addition and subtraction
+on the contents of the accumulator. The compare operations allow
+the comparison of the accumulator and X or Y with memory values.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#ADC">ADC</a></td>
+    <td>Add with Carry</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#V">V</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#SBC">SBC</a></td>
+    <td>Subtract with Carry</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#V">V</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CMP">CMP</a></td>
+    <td>Compare accumulator</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CPX">CPX</a></td>
+    <td>Compare X register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CPY">CPY</a></td>
+    <td>Compare Y register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+</table></p>
+
+<h3>Increments &amp; Decrements</h3>
+
+<p>Increment or decrement a memory location or one of the X or
+Y registers by one setting the negative (<a href="registers.html#N">N</a>)
+and zero (<a href="registers.html#Z">Z</a>) flags as appropriate,</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#INC">INC</a></td>
+    <td>Increment a memory location</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#INX">INX</a></td>
+    <td>Increment the X register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#INY">INY</a></td>
+    <td>Increment the Y register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#DEC">DEC</a></td>
+    <td>Decrement a memory location</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#DEX">DEX</a></td>
+    <td>Decrement the X register</td>
+    <td align="MIDDLE" width="15%"><a href="#N">N</a>,<a href="#Z">Z</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#DEY">DEY</a></td>
+    <td>Decrement the Y register</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a></td>
+  </tr>
+</table></p>
+
+<h3>Shifts</h3>
+
+<p>Shift instructions cause the bits within either a memory location
+or the accumulator to be shifted by one bit position. The rotate
+instructions use the contents if the carry flag (<a href="registers.html#C">C</a>)
+to fill the vacant position generated by the shift and to catch
+the overflowing bit. The arithmetic and logical shifts shift in
+an appropriate 0 or 1 bit as appropriate but catch the overflow
+bit in the carry flag (<a href="registers.html#C">C</a>).</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#ASL">ASL</a></td>
+    <td>Arithmetic Shift Left</td>
+    <td align="MIDDLE"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#LSR">LSR</a></td>
+    <td>Logical Shift Right</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#ROL">ROL</a></td>
+    <td>Rotate Left</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#ROR">ROR</a></td>
+    <td>Rotate Right</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#N">N</a>,<a href="registers.html#Z">Z</a>,<a href="registers.html#C">C</a></td>
+  </tr>
+</table></p>
+
+<h3>Jumps &amp; Calls</h3>
+
+<p>The following instructions modify the program counter causing
+a break to normal sequential execution. The <a href="reference.html#JSR">JSR</a>
+instruction pushes the old <a href="registers.html#PC">PC</a>
+onto the stack before changing it to the new location allowing
+a subsequent <a href="reference.html#RTS">RTS</a> to return execution
+to the instruction after the call.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#JMP">JMP</a></td>
+    <td>Jump to another location</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#JSR">JSR</a></td>
+    <td>Jump to a subroutine</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#RTS">RTS</a></td>
+    <td>Return from subroutine</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+</table></p>
+
+<h3>Branches</h3>
+
+<p>Branch instructions break the normal sequential flow of execution
+by changing the program counter if a specified condition is met.
+All the conditions are based on examining a single bit within
+the processor status.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BCC">BCC</a></td>
+    <td>Branch if carry flag clear</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BCS">BCS</a></td>
+    <td>Branch if carry flag set</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BEQ">BEQ</a></td>
+    <td>Branch if zero flag set</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BMI">BMI</a></td>
+    <td>Branch if negative flag set</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BNE">BNE</a></td>
+    <td>Branch if zero flag clear</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BPL">BPL</a></td>
+    <td>Branch if negative flag clear</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BVC">BVC</a></td>
+    <td>Branch if overflow flag clear</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BVS">BVS</a></td>
+    <td>Branch if overflow flag set</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+</table></p>
+
+<p>Branch instructions use relative address to identify the target
+instruction if they are executed. As relative addresses are stored
+using a signed 8 bit byte the target instruction must be within
+126 bytes before the branch or 128 bytes after the branch.</p>
+
+<h3>Status Flag Changes</h3>
+
+<p>The following instructions change the values of specific status
+flags.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CLC">CLC</a></td>
+    <td>Clear carry flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CLD">CLD</a></td>
+    <td>Clear decimal mode flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#D">D</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CLI">CLI</a></td>
+    <td>Clear interrupt disable flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#I">I</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#CLV">CLV</a></td>
+    <td>Clear overflow flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#V">V</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#SEC">SEC</a></td>
+    <td>Set carry flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#C">C</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#SED">SED</a></td>
+    <td>Set decimal mode flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#D">D</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#SEI">SEI</a></td>
+    <td>Set interrupt disable flag</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#I">I</a></td>
+  </tr>
+</table></p>
+
+<h3>System Functions</h3>
+
+<p>The remaining instructions perform useful but rarely used functions.</p>
+
+<p><table border="1" cellpadding="0" cellspacing="0" width="450">
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#BRK">BRK</a></td>
+    <td>Force an interrupt</td>
+    <td align="MIDDLE" width="15%"><a href="registers.html#B">B</a></td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#NOP">NOP</a></td>
+    <td>No Operation</td>
+    <td align="MIDDLE" width="15%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="MIDDLE" width="10%"><a href="reference.html#RTI">RTI</a></td>
+    <td>Return from Interrupt</td>
+    <td align="MIDDLE" width="15%">All</td>
+  </tr>
+</table></p>
+
+<p><table border="0" cellpadding="0" cellspacing="0" width="100%" height="30">
+  <tr>
+    <td width="25%" bgcolor="#aaaaff">&nbsp;<a href="registers.html">&lt;&lt;
+      Back</a></td>
+    <td width="25%" bgcolor="#aaaaff">
+      <p><center><a href="/web/20151001025659/http://www.obelisk.me.uk/index.html" target="_parent">Home</a></center></td>
+    <td width="25%" bgcolor="#aaaaff">
+      <p><center><a href="index.html">Contents</a></center></td>
+    <td align="RIGHT" width="25%" bgcolor="#aaaaff"><a href="addressing.html">Next
+      &gt;&gt;</a></td>
+  </tr>
+</table></p>
+<p>
+<hr>
